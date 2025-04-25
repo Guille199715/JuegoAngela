@@ -112,25 +112,22 @@
         };
 
         function dibujarNumero(numero = null) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpia el canvas
-    if (numero !== null) {
-        // Configura la fuente y los colores
-        ctx.font = `${canvas.height * 0.6}px Arial`;
-        ctx.fillStyle = "yellow";
-        ctx.textAlign = "center"; // Centrado horizontalmente
-        ctx.textBaseline = "middle"; // Centrado verticalmente
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 8; // Aumenta el grosor del borde negro
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpia el canvas
+            if (numero !== null) {
+                ctx.font = `${canvas.height * 0.6}px Arial`; // Tamaño dinámico de la fuente
+                ctx.fillStyle = "yellow";
+                ctx.textAlign = "center"; // Centrado horizontalmente
+                ctx.textBaseline = "middle"; // Centrado verticalmente
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 8; // Grosor del borde negro aumentado
 
-        // Calcula el centro del canvas
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
+                const centerX = canvas.width / 2; // Centro horizontal
+                const centerY = canvas.height / 2; // Centro vertical
 
-        // Dibuja el texto con borde y relleno
-        ctx.strokeText(numero, centerX, centerY); // Dibuja el borde con mayor grosor
-        ctx.fillText(numero, centerX, centerY); // Dibuja el texto relleno
-    }
-}
+                ctx.strokeText(numero, centerX, centerY); // Dibuja borde del texto
+                ctx.fillText(numero, centerX, centerY); // Dibuja el texto relleno
+            }
+        }
 
         function generarOpciones() {
             opcionesDiv.innerHTML = ""; // Limpia las opciones previas
