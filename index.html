@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafío Numérico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('fondo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #juego {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 2px solid #000;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 75%;
+            max-width: 350px;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        #opciones {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center; /* Centrar botones horizontalmente */
+            gap: 10px; /* Espaciado uniforme entre los botones */
+            width: 100%; /* Ancho completo del contenedor */
+            box-sizing: border-box; /* Incluye bordes y rellenos en el tamaño */
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: yellow;
+            color: black;
+            border: 2px solid black;
+            border-radius: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+            width: calc(30% - 10px); /* Ajustar para proporcionalidad */
+            max-width: 100px; /* Límite máximo por botón */
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            background-color: #f1c40f;
+        }
+
+        canvas {
+            width: 87%; /* El ancho coincide con el contenedor de las opciones */
+            height: auto; /* Ajusta la altura automáticamente */
+            border: 2px solid #000;
+            margin-top: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        p#mensaje {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div id="juego">
+        <h1>Desafío Numérico</h1>
+        <p id="instrucciones">Selecciona el número correcto:</p>
+        <div id="opciones"></div>
+        <canvas id="contadorCanvas"></canvas>
+        <p id="mensaje"></p>
+        <audio id="errorSound" src="error.mp3"></audio>
+    </div>
+    <script>
+        const canvas = document.getElementById("contadorCanvas");
+        const ctx = canvas.getContext("2d");
+        const opcionesDiv = document.getElementById("opciones");
+        const mensaje = document.getElementById("mensaje");
+        const errorSound = document.getElementById("errorSound");
+
+        let contador = 1;
+
+        function reproducirAudio(numero) {
+            const mensaje = new SpeechSynthesisUtterance(numero.toString());
+            const voces = window.speechSynthesis.getVoices();
+            mensaje.voice = voces.find(voz => voz.lang === 'es-ES') || voces[0];
+            mensaje.lang = 'es-ES';
+            mensaje.pitch = 1;
+            mensaje.rate = 1;
+            speechSynthesis.speak(mensaje);
+        }
+
+        window.speechSynthesis.onvoiceschanged = () => {
+            console.log("Voces cargadas");
+        };
+
+        function dibujarNumero(numero = null) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpia el canvas
+    if (numero !== null) {
+        // Configura la fuente y los colores
+        ctx.font = `${canvas.height * 0.6}px Arial`;
+        ctx.fillStyle = "yellow";
+        ctx.textAlign = "center"; // Centrado horizontalmente
+        ctx.textBaseline = "middle"; // Centrado verticalmente
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 8; // Aumenta el grosor del borde negro
+
+        // Calcula el centro del canvas
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        // Dibuja el texto con borde y relleno
+        ctx.strokeText(numero, centerX, centerY); // Dibuja el borde con mayor grosor
+        ctx.fillText(numero, centerX, centerY); // Dibuja el texto relleno
+    }
+}
+
+        function generarOpciones() {
+            opcionesDiv.innerHTML = ""; // Limpia las opciones previas
+            const correcta = contador;
+            const incorrecta1 = correcta + Math.floor(Math.random() * 5 + 1);
+            const incorrecta2 = correcta + Math.floor(Math.random() * 5 + 6);
+            const opciones = [correcta, incorrecta1, incorrecta2].sort(() => Math.random() - 0.5);
+
+            opciones.forEach((numero) => {
+                const boton = document.createElement("button");
+                boton.textContent = numero;
+                boton.onclick = () => verificarNumero(numero);
+                opcionesDiv.appendChild(boton);
+            });
+        }
+
+        function verificarNumero(numeroSeleccionado) {
+            if (numeroSeleccionado === contador) {
+                mensaje.textContent = "";
+                dibujarNumero(numeroSeleccionado);
+                reproducirAudio(numeroSeleccionado);
+                contador++;
+
+                if (contador > 100) {
+                    alert("¡Felicidades, completaste el desafío!");
+                    contador = 1;
+                }
+
+                generarOpciones();
+            } else {
+                mensaje.textContent = "¡Error! Debes empezar de nuevo.";
+                errorSound.play();
+                contador = 1;
+                dibujarNumero();
+                generarOpciones();
+            }
+        }
+
+        dibujarNumero();
+        generarOpciones();
+    </script>
+</body>
+</html>
